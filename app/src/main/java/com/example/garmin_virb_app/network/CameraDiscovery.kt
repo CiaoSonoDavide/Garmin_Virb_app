@@ -17,7 +17,7 @@ object CameraDiscovery {
         "http://192.168.1.1",
         "http://192.168.0.1",
         "http://10.0.0.1",
-        "http://192.168.43.1", // alcuni hotspot usano 43.1
+        "http://192.168.0.134",
         "http://192.168.1.254"
     )
 

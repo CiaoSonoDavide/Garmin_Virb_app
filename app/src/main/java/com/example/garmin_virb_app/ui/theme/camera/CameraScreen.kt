@@ -17,6 +17,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -47,6 +48,7 @@ fun CameraScreen(
     val connected by viewModel.connected.collectAsState()
     val isRecording by viewModel.isRecording.collectAsState()
     val mode by viewModel.mode.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     val exoPlayer = remember(context){ ExoPlayer.Builder(context).build()}
     DisposableEffect(exoPlayer){
@@ -140,6 +142,10 @@ fun CameraScreen(
 
                 Button(onClick = { viewModel.connect()}){
                     Text("Connect")
+                }
+
+                if(uiState is UIState.Loading){
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
             }
         }
