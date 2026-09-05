@@ -47,6 +47,13 @@ class CameraViewModel(
     fun connect(){
         viewModelScope.launch {
             _uiState.value = UIState.Loading
+            val preconfigured = _streamUrl.value
+            if (!preconfigured.isNullOrEmpty()) {
+                _connected.value = true
+                _uiState.value = UIState.Idle
+                return@launch
+            }
+
             val res = repository.connectToCamera()
             if(res.isSuccess){
                 _streamUrl.value = res.getOrNull()

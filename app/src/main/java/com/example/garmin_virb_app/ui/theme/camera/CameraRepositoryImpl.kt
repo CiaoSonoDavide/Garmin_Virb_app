@@ -12,18 +12,18 @@ class CameraRepositoryImpl(
     private val baseUrlProvider: () -> String,
     private val client: OkHttpClient = OkHttpClient()
 ): CameraRepository {
-    override suspend fun connectToCamera(): Result<String> = withContext(Dispatchers.IO){
+    override suspend fun connectToCamera(): Result<String> = withContext(Dispatchers.IO) {
         try {
-            val base = baseUrlProvider()
-            val statusReq = Request.Builder().url("$base/status").get().build()
+            val base = baseUrlProvider().trimEnd('/')
+            val statusReq = Request.Builder().url("$base/virb").get().build()
             client.newCall(statusReq).execute().use { resp ->
-                if(!resp.isSuccessful) return@withContext Result.failure(Exception("Status failed: ${resp.code}"))
+                if (!resp.isSuccessful) return@withContext Result.failure(Exception("Status failed: ${resp.code}"))
             }
-            val streamUrl = "$base/stream" //adattare all'API reale
-            Result.success(streamUrl)
-        }
-        catch(e:Exception){
-            Result.failure(e)
+            val host = android.net.Uri.parse(base).host ?: base.removePrefix("http://").removePrefix("https://")
+            val rtsp = "rtsp://$host/livePreviewStream"
+            return@withContext Result.success(rtsp)
+        } catch (e: Exception) {
+            return@withContext Result.failure(e)
         }
     }
 
