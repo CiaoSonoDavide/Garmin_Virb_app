@@ -50,6 +50,7 @@ fun CameraScreen(
     val isRecording by viewModel.isRecording.collectAsState()
     val mode by viewModel.mode.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
+    val isLoading  = uiState is UIState.Loading
 
     val exoPlayer = remember(context){ ExoPlayer.Builder(context).build()}
     DisposableEffect(exoPlayer){
@@ -116,12 +117,28 @@ fun CameraScreen(
                }
                 else{
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                       //PER DEBUG SI PUO' TOGLIERE
+                        if (!streamUrl.isNullOrEmpty()) {
+                            Text(text = "Stream: $streamUrl", modifier = Modifier.padding(8.dp))
+                        } else {
+                            Text(text = "Nessun stream configurato", modifier = Modifier.padding(8.dp))
+                        }
                         Text(
                             text = "Preview non disponibile",
                             color = MaterialTheme.colorScheme.onBackground
                         )
                    }
                }
+                if(isLoading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.35f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        androidx.compose.material3.CircularProgressIndicator()
+                    }
+                }
             }
             Row (
                 modifier = Modifier
@@ -141,7 +158,7 @@ fun CameraScreen(
                     }
                 )
 
-                Button(onClick = { onConnect() }){
+                Button(onClick = { onConnect() }, enabled = !isLoading){
                     Text("Connect")
                 }
 

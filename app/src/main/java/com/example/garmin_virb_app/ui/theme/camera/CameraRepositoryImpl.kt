@@ -19,8 +19,7 @@ class CameraRepositoryImpl(
             client.newCall(statusReq).execute().use { resp ->
                 if (!resp.isSuccessful) return@withContext Result.failure(Exception("Status failed: ${resp.code}"))
             }
-            val host = android.net.Uri.parse(base).host ?: base.removePrefix("http://").removePrefix("https://")
-            val rtsp = "rtsp://$host/livePreviewStream"
+            val rtsp = buildRtspFromBaseHttp(base)
             return@withContext Result.success(rtsp)
         } catch (e: Exception) {
             return@withContext Result.failure(e)
