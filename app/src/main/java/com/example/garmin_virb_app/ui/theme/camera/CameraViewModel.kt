@@ -20,7 +20,7 @@ class CameraViewModel(
 ): ViewModel() {
 
     private val _streamUrl = MutableStateFlow<String?>(null)
-    val streamUrl: StateFlow<String?> = _streamUrl.asStateFlow()
+    val streamUrl: StateFlow<String?> = _streamUrl
 
     private val _connected = MutableStateFlow(false)
     val connected: StateFlow<Boolean> = _connected.asStateFlow()
@@ -123,5 +123,9 @@ class CameraViewModel(
                 _events.emit("Errore caricamento gallery: ${res.exceptionOrNull()?.message}")
         }
         }
+    }
+
+    fun setStreamUrl(url: String) {
+        _streamUrl.value = url
     }
 }

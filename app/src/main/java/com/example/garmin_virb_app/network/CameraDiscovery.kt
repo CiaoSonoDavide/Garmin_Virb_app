@@ -15,9 +15,8 @@ object CameraDiscovery {
     // Lista di IP probabili da provare se non trovi gateway
     private val commonIps = listOf(
         "http://192.168.1.1",
-        "http://192.168.0.1",
+        "http://192.168.0.1", //virb canonical gateway
         "http://10.0.0.1",
-        "http://192.168.0.134",
         "http://192.168.1.254"
     )
 
@@ -34,7 +33,8 @@ object CameraDiscovery {
             val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
             val info = wifiManager.connectionInfo
             val rawSsid = info?.ssid ?: return null
-            return rawSsid.trim('"')
+            val ssid = rawSsid.trim('"')
+            return ssid
         }
         catch (t: Throwable){
             return null
@@ -83,23 +83,26 @@ object CameraDiscovery {
     suspend fun probeForCameraBaseUrl(): String? = withContext(Dispatchers.IO){
         val candidateUrls = mutableListOf<String>()
         candidateUrls.addAll(commonIps)
+        val endpoints = listOf("/virb", "/", "/status", "/info")
         for(base in candidateUrls){
-            try{
-                val statusUrl = base.trimEnd('/')+ "/status"
-                val req = Request.Builder().url(statusUrl).get().build()
-                val resp = probeClient.newCall(req).execute()
-                resp.use{ r ->
-                    if(r.isSuccessful) return@withContext base
+            for (ep in endpoints){
+                val url = base.trimEnd('/') + ep
+                try{
+                    val req = Request.Builder().url(url).get().build()
+                    val resp = probeClient.newCall(req).execute()
+                    resp.use{ r ->
+                        if(r.isSuccessful) return@withContext base
+                    }
                 }
-            }
-            catch (_: Exception){
+                catch (_: Exception){
 
+                }
             }
         }
         null
     }
 
-    suspend fun discoverCamerBaseUrl(context: Context, virbSsidHint: String? = null): String? = withContext(Dispatchers.IO){
+    suspend fun discoverCameraBaseUrl(context: Context, virbSsidHint: String? = null): String? = withContext(Dispatchers.IO){
         //verifica SSID se fornito come hint
         val ssid = getCurrentSsid(context)
         if(virbSsidHint != null && ssid != null &&!ssid.contains(virbSsidHint, ignoreCase = true)){
@@ -111,8 +114,7 @@ object CameraDiscovery {
         if(!gw.isNullOrEmpty()){
             val candidate = "http://$gw"
             try{
-                val url = candidate + "/status"
-                val req = Request.Builder().url(url).get().build()
+                val req = Request.Builder().url(candidate.trimEnd('/') + "/virb").get().build()
                 val resp = probeClient.newCall(req).execute()
                 resp.use { r ->
                     if(r.isSuccessful) return@withContext candidate
@@ -132,7 +134,7 @@ object CameraDiscovery {
             if(prefix.isNotEmpty()){
                 val candidate = "http://$prefix.1"
                 try{
-                    val req = Request.Builder().url(candidate  + "/status").get().build()
+                    val req = Request.Builder().url(candidate  + "/virb").get().build()
                     val resp = probeClient.newCall(req).execute()
                     resp.use { r ->
                         if(r.isSuccessful) return@withContext candidate

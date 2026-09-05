@@ -40,6 +40,7 @@ import androidx.media3.ui.PlayerView
 @Composable
 fun CameraScreen(
     viewModel: CameraViewModel,
+    onConnect: () -> Unit = {},
     onOpenGallery: () -> Unit = {},
     onOpenSettings: () -> Unit = {}
 ){
@@ -140,7 +141,7 @@ fun CameraScreen(
                     }
                 )
 
-                Button(onClick = { viewModel.connect()}){
+                Button(onClick = { onConnect() }){
                     Text("Connect")
                 }
 

@@ -1,5 +1,6 @@
 package com.example.garmin_virb_app.ui.theme.camera
 
+import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -87,5 +88,10 @@ class CameraRepositoryImpl(
         catch (e: Exception){
             Result.failure(e)
         }
+    }
+
+    fun buildRtspFromBaseHttp(baseHttp: String): String {
+        val host = Uri.parse(baseHttp).host ?: baseHttp
+        return "rtsp://$host/livePreviewStream"
     }
 }
