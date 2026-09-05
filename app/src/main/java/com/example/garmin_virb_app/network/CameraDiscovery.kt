@@ -22,9 +22,9 @@ object CameraDiscovery {
     )
 
     private val probeClient = OkHttpClient.Builder()
-        .connectTimeout(700, TimeUnit.MILLISECONDS)
-        .callTimeout(1200, TimeUnit.MILLISECONDS)
-        .readTimeout(1000, TimeUnit.MILLISECONDS)
+        .connectTimeout(1500, TimeUnit.MILLISECONDS)
+        .callTimeout(2500, TimeUnit.MILLISECONDS)
+        .readTimeout(2000, TimeUnit.MILLISECONDS)
         .build()
 
     fun getCurrentSsid(context: Context): String? {

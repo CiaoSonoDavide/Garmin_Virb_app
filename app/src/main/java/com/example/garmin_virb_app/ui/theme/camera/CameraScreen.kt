@@ -50,6 +50,7 @@ fun CameraScreen(
     val isRecording by viewModel.isRecording.collectAsState()
     val mode by viewModel.mode.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
+    val isLoading  = uiState is UIState.Loading
 
     val exoPlayer = remember(context){ ExoPlayer.Builder(context).build()}
     DisposableEffect(exoPlayer){
@@ -122,6 +123,16 @@ fun CameraScreen(
                         )
                    }
                }
+                if(isLoading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.35f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        androidx.compose.material3.CircularProgressIndicator()
+                    }
+                }
             }
             Row (
                 modifier = Modifier
@@ -141,7 +152,7 @@ fun CameraScreen(
                     }
                 )
 
-                Button(onClick = { onConnect() }){
+                Button(onClick = { onConnect() }, enabled = !isLoading){
                     Text("Connect")
                 }
 
