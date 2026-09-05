@@ -117,6 +117,12 @@ fun CameraScreen(
                }
                 else{
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                       //PER DEBUG SI PUO' TOGLIERE
+                        if (!streamUrl.isNullOrEmpty()) {
+                            Text(text = "Stream: $streamUrl", modifier = Modifier.padding(8.dp))
+                        } else {
+                            Text(text = "Nessun stream configurato", modifier = Modifier.padding(8.dp))
+                        }
                         Text(
                             text = "Preview non disponibile",
                             color = MaterialTheme.colorScheme.onBackground
